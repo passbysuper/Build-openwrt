@@ -8,6 +8,10 @@ PROFILE="generic"
 
 PACKAGES=""
 
+# 减去的包
+
+PACKAGES="$PACKAGES -dnsmasq"
+
 # Argon 主题
 PACKAGES="$PACKAGES luci-theme-argon luci-i18n-argon-config-zh-cn"
 
