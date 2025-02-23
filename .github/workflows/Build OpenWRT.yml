@@ -165,18 +165,18 @@ jobs:
       - name: Download External IPK
         working-directory: imagebuilder
         run: |
-           ./diy_ipk_from_release
-           ./diy_ipk_from_repositories
+           bash ./diy_ipk_from_release
+           bash ./diy_ipk_from_repositories
 
       - name: Run Patch and DIY Scripts
         working-directory: imagebuilder
         run: |
-          ./Patch
+          bash ./Patch
    
       - name: Generate Firmware
         working-directory: imagebuilder
         run: |
-          ./build
+          bash ./build
 
       - name: MV Firmware
         working-directory: imagebuilder
