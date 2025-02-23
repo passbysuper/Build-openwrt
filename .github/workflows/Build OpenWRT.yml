@@ -32,9 +32,9 @@ jobs:
 
     strategy:
       matrix:
-        version: [immortalwrt, openwrt]
+        #version: [immortalwrt, openwrt]
         #version: [immortalwrt]
-        #version: [openwrt]
+        version: [openwrt]
         
         #branch: [openwrt-24.10, openwrt-23.10]  # 默认分支
         branch: [openwrt-24.10]
@@ -173,15 +173,51 @@ jobs:
       - name: Run Patch and DIY Scripts
         working-directory: ${{ matrix.version }}-imagebuilder-$(echo $branch | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
         run: |
-          bash scripts/builder-patch.sh
+          ./Patch
    
       - name: Generate Firmware
         working-directory: ${{ env.VENDOR }}-imagebuilder-${{ env.VERSION }}-x86-64.Linux-x86_64
         run: |
-          bash build.sh   
+          ./build
+
+      - name: MV Firmware
+        working-directory: ${{ env.VENDOR }}-imagebuilder-${{ env.VERSION }}-x86-64.Linux-x86_64
+        run: |
+          mkdir -p ./targets
+          find /bin/targets/ -type f -exec mv {} ./targets/ \;
 
 
+      - name: Create Git tag
+        id: create_tag
+        run: |
+          # 设置标签名
+          TAG_NAME_ENV="ENV：${{ env.START_TIME_TAG }}"
+          RELEASE_NAME_ENV="ENV：${{ env.START_TIME_RELEASE }}"
 
-      - name: SSH（INPUT"q" ➡️ RUN："./mv" ➡️ “exit”）
-        #if: ${{ github.event.inputs.run_ssh == 'true' }}  # 只有 run_ssh 为 true 时执行
-        uses: mxschmitt/action-tmate@v3
+          TAG_NAME_FM="FM：${{ env.START_TIME_TAG }}"
+          RELEASE_NAME_FM="Firmware发布时间(UTC+8)：${{ env.START_TIME_RELEASE }}"
+          
+          # 输出标签名和发布名
+          echo "TAG_NAME_ENV=$TAG_NAME_ENV" >> $GITHUB_ENV
+          echo "RELEASE_NAME_ENV=$RELEASE_NAME_ENV" >> $GITHUB_ENV
+          
+          echo "TAG_NAME_FM=$TAG_NAME_FM" >> $GITHUB_ENV
+          echo "RELEASE_NAME_FM=$RELEASE_NAME_FM" >> $GITHUB_ENV
+          
+          # 将标签名和发布名传递给后续步骤
+          echo "TAG_NAME_ENV=${TAG_NAME_ENV}" >> $GITHUB_ENV
+          echo "RELEASE_NAME_ENV=${RELEASE_NAME_ENV}" >> $GITHUB_ENV   
+          
+          echo "TAG_NAME_FM=${TAG_NAME_FM}" >> $GITHUB_ENV
+          echo "RELEASE_NAME_FM=${RELEASE_NAME_FM}" >> $GITHUB_ENV 
+
+      - name: Set up GitHub Release For Firmware
+        id: create_release_for_firmware
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME_FM }}
+          name: ${{ env.RELEASE_NAME_FM }}
+          files: ./targets/*  # 递归匹配所有文件
+          body: "固件发布"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
