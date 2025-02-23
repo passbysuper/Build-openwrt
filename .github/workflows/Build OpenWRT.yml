@@ -160,7 +160,8 @@ jobs:
         run: |
           # 将 files、diffconfig、diy. sh复制到 Docker 容器中的 /home/user/openwrt 即 /work/openwrt 下
           cp -r ./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/* ./${{ matrix.version }}-imagebuilder-*/
-          cp -r ./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/* ./${{ matrix.version }}-imagebuilder-*/
+          cp -r ./Patch ./${{ matrix.version }}-imagebuilder-*/
+          cp -r ./Firmware_Selector ./${{ matrix.version }}-imagebuilder-*/
           
 
       - name: Download External IPK
