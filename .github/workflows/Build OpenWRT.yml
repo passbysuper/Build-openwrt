@@ -88,13 +88,15 @@ jobs:
             if curl --head --silent --fail "$url" > /dev/null; then
               echo "Found valid URL: $url"
               imagebuilder_url=$url
-               break
+              N=$N
+              break
             else
-               echo "URL not valid: $url"
+              echo "URL not valid: $url"
             fi
           done
             
           echo "imagebuilder_url=$imagebuilder_url" >> $GITHUB_ENV
+          echo "N=$N" >> $GITHUB_ENV
         
       - name: 查看机器配置  
         run: |  
@@ -135,19 +137,41 @@ jobs:
           df -hT
           echo "=============================================================================="
       
-      - name: Install prerequisites
+      - name: Initialization Environment
         run: |
           sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev \
           zlib1g-dev gawk genisoimage git gettext libssl-dev xsltproc rsync wget \
-          unzip python3 python3-distutils
+          unzip python3 python3-distutils qemu-utils
 
-      - name: Build with imagebuilder
+      - name: Checkout
+        uses: actions/checkout@v3
+        with: 
+          path: origin
+
+      - name: Download Image Builder
         continue-on-error: true  # 设置即使该步骤失败，依然继续执行后续步骤
         run: |
           wget ${{ env.imagebuilder_url }}
           tar -I zstd -x -f ${{ matrix.version }}-imagebuilder-*.tar.zst
           cd ${{ matrix.version }}-imagebuilder-*/
           make image PROFILE="generic"
+
+      - name: Download External IPK
+        working-directory: ${{ matrix.version }}-imagebuilder-$(echo $branch | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
+        run: |
+           ./
+
+      - name: Run Patch and DIY Scripts
+        working-directory: ${{ matrix.version }}-imagebuilder-$(echo $branch | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
+        run: |
+          bash scripts/builder-patch.sh
+   
+      - name: Generate Firmware
+        working-directory: ${{ env.VENDOR }}-imagebuilder-${{ env.VERSION }}-x86-64.Linux-x86_64
+        run: |
+          bash build.sh   
+
+
 
       - name: SSH（INPUT"q" ➡️ RUN："./mv" ➡️ “exit”）
         #if: ${{ github.event.inputs.run_ssh == 'true' }}  # 只有 run_ssh 为 true 时执行
