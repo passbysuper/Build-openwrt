@@ -80,7 +80,6 @@ jobs:
         run: |                 
           for N in {9..0}; do           
             platform="${{ matrix.platform }}"
-            #url="https://downloads.${{ matrix.version }}.org/releases/${{ env.branch }}.${N}/targets/${platform//_/\/}/${{ matrix.version }}-imagebuilder-${{ env.branch }}.${N}-${platform//_/-}.Linux-x86_64.tar.zst"                      
             url="https://downloads.${{ matrix.version }}.org/releases/$(echo $branch | sed 's/^openwrt-//').${N}/targets/${platform//_/\/}/${{ matrix.version }}-imagebuilder-$(echo $branch | sed 's/^openwrt-//').${N}-${platform//_/-}.Linux-x86_64.tar.zst"
             echo "Checking ${url}..."
             
@@ -152,36 +151,35 @@ jobs:
         continue-on-error: true  # 设置即使该步骤失败，依然继续执行后续步骤
         run: |
           wget ${{ env.imagebuilder_url }}
-          tar -I zstd -x -f ${{ matrix.version }}-imagebuilder-*.tar.zst
-          cd ${{ matrix.version }}-imagebuilder-*/
-          make image PROFILE="generic"
+          #tar -I zstd -x -f ${{ matrix.version }}-imagebuilder-*.tar.zst
+          mkdir -p imagebuilder
+          tar -I zstd -x -f ${{ matrix.version }}-imagebuilder-*.tar.zst --strip-components=1 -C imagebuilder
 
       - name: Move Files
         run: |
-          # 将 files、diffconfig、diy. sh复制到 Docker 容器中的 /home/user/openwrt 即 /work/openwrt 下
-          cp -r ./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/* ./${{ matrix.version }}-imagebuilder-*/
-          cp -r ./Patch ./${{ matrix.version }}-imagebuilder-*/
-          cp -r ./Firmware_Selector ./${{ matrix.version }}-imagebuilder-*/
+          cp -r ./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/* ./imagebuilder
+          cp -r ./Patch ./imagebuilder
+          cp -r ./Firmware_Selector ./imagebuilder
           
 
       - name: Download External IPK
-        working-directory: ${{ matrix.version }}-imagebuilder-$(echo ${{ env.branch }} | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
+        working-directory: imagebuilder
         run: |
            ./diy_ipk_from_release
            ./diy_ipk_from_repositories
 
       - name: Run Patch and DIY Scripts
-        working-directory: ${{ matrix.version }}-imagebuilder-$(echo ${{ env.branch }} | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
+        working-directory: imagebuilder
         run: |
           ./Patch
    
       - name: Generate Firmware
-        working-directory: ${{ matrix.version }}-imagebuilder-$(echo ${{ env.branch }} | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
+        working-directory: imagebuilder
         run: |
           ./build
 
       - name: MV Firmware
-        working-directory: ${{ matrix.version }}-imagebuilder-$(echo ${{ env.branch }} | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
+        working-directory: imagebuilder
         run: |
           mkdir -p ./targets
           find /bin/targets/ -type f -exec mv {} ./targets/ \;
