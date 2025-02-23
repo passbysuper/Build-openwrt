@@ -1,3 +1,16 @@
 # 用于修改默认分区大小
-# sed -i 's/^CONFIG_TARGET_KERNEL_PARTSIZE=.*$/CONFIG_TARGET_KERNEL_PARTSIZE=64/' .config
-# sed -i 's/^CONFIG_TARGET_ROOTFS_PARTSIZE=.*$/CONFIG_TARGET_ROOTFS_PARTSIZE=400/' .config
+sed -i 's/^CONFIG_TARGET_KERNEL_PARTSIZE=.*$/CONFIG_TARGET_KERNEL_PARTSIZE=64/' .config
+sed -i 's/^CONFIG_TARGET_ROOTFS_PARTSIZE=.*$/CONFIG_TARGET_ROOTFS_PARTSIZE=400/' .config
+sed -i 's/^CONFIG_GRUB_TIMEOUT=.*$/CONFIG_GRUB_TIMEOUT="1"/' .config
+
+CONFIG_GRUB_TIMEOUT="3"
+
+# 取消不需要的镜像
+sed -i 's/^CONFIG_TARGET_ROOTFS_EXT4FS=.*$/#&/' .config
+sed -i 's/^CONFIG_TARGET_ROOTFS_SQUASHFS=.*$/#&/' .config
+sed -i 's/^CONFIG_GRUB_IMAGES=.*$/#&/' .config
+sed -i 's/^CONFIG_ISO_IMAGES=.*$/#&/' .config
+sed -i 's/^CONFIG_QCOW2_IMAGES=.*$/#&/' .config
+sed -i 's/^CONFIG_VDI_IMAGES=.*$/#&/' .config
+sed -i 's/^CONFIG_VMDK_IMAGES=.*$/#&/' .config
+sed -i 's/^CONFIG_VHDX_IMAGES=.*$/#&/' .config
