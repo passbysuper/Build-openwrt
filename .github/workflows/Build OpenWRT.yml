@@ -79,7 +79,9 @@ jobs:
         run: |                 
           for N in {9..0}; do           
             platform="${{ matrix.platform }}"
-            url="https://downloads.${{ matrix.version }}.org/releases/${{ env.branch }}.${N}/targets/${platform//_/\//}/${{ matrix.version }}-imagebuilder-${{ env.branch }}.${N}-${platform//_/-}.Linux-x86_64.tar.zst"                      
+            #url="https://downloads.${{ matrix.version }}.org/releases/${{ env.branch }}.${N}/targets/${platform//_/\//}/${{ matrix.version }}-imagebuilder-${{ env.branch }}.${N}-${platform//_/-}.Linux-x86_64.tar.zst"                      
+            url="https://downloads.${{ matrix.version }}.org/releases/${{ env.branch }}.${N}/targets/${platform//_/\/}/${{ matrix.version }}-imagebuilder-${{ env.branch }}.${N}-${platform//_/-}.Linux-x86_64.tar.zst"                      
+
             echo "Checking ${url}..."
             
             # 使用 curl 检查网址是否有效
