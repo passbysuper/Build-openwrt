@@ -28,7 +28,7 @@ download_files() {
         return
     fi
 
-    # 下载每个符合条件的文件到 package 目录
+    # 下载每个符合条件的文件到 packages 目录
     for url in $assets; do
         echo "Downloading $url..."
         wget -q -P packages "$url"
