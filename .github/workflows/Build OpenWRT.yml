@@ -32,9 +32,9 @@ jobs:
 
     strategy:
       matrix:
-        #version: [immortalwrt, openwrt]
+        version: [immortalwrt, openwrt]
         #version: [immortalwrt]
-        version: [openwrt]
+        #version: [openwrt]
         
         #branch: [openwrt-24.10, openwrt-23.10]  # 默认分支
         branch: [openwrt-24.10]
