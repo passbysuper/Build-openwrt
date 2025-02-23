@@ -1,0 +1,144 @@
+
+name: Build OpenWRT
+
+on:
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      run_ssh:
+        description: '开启SSH'
+        required: false
+        default: 'false'  # 默认不执行
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+      download_op_folder:
+        description: '开启缓存加速（首次编译需禁用）'
+        required: false
+        default: 'true'  # 默认不执行
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+  # 定时触发 (例如每天凌晨 1 点触发)
+#  schedule:
+#    - cron: '0 1 * * *'  # 每天凌晨 1 点 UTC，按需求调整时间
+
+jobs:
+  Building:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        #version: [immortalwrt, openwrt]
+        version: [openwrt]
+        
+        #branch: [openwrt-24.10, openwrt-23.10]  # 默认分支
+        branch: [openwrt-24.10]
+        
+        # 如果 version 为 lede，默认分支将是 main，稍后调整
+        platform: [x86_64]
+        
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set start time (Asia/Shanghai timezone)
+        id: set_time
+        run: |
+          # 获取当前时间并格式化
+          START_TIME_TAG=$(TZ="Asia/Shanghai" date +'%Y.%m.%d-%H_%M')
+          START_TIME_RELEASE=$(TZ="Asia/Shanghai" date +'%Y-%m-%d %H:%M')
+          
+          echo "Start time: $START_TIME_TAG"
+               
+          # 将时间设置为环境变量，供后续步骤使用
+          echo "START_TIME_TAG=$START_TIME_TAG" >> $GITHUB_ENV
+          echo "START_TIME_RELEASE=$START_TIME_RELEASE" >> $GITHUB_ENV          
+        
+      - name: Determine branch
+        id: set_branch
+        run: |
+          if [[ "${{ matrix.version }}" == "immortalwrt" || "${{ matrix.version }}" == "openwrt" ]]; then
+            echo "branch=${{ matrix.branch }}" >> $GITHUB_ENV
+          elif [[ "${{ matrix.version }}" == "lede" ]]; then
+            if [[ "${{ matrix.branch }}" == "openwrt-24.10" ]]; then
+              echo "branch=master" >> $GITHUB_ENV
+            else
+              exit 0
+            fi
+          elif [[ "${{ matrix.version }}" == "lienol" ]]; then
+            branch_name=$(echo "${{ matrix.branch }}" | sed 's/^openwrt-//')
+            echo "branch=${branch_name}" >> $GITHUB_ENV
+          fi
+                  
+          for N in {9..0}; do           
+            platform="${{ matrix.platform }}"
+            url="https://downloads.${{ matrix.version }}.org/releases/${{ env.branch }}.${N}/targets/${platform//_/\//}/${{ matrix.version }}-imagebuilder-${{ env.branch }}.${N}-${platform//_/-}.Linux-x86_64.tar.zst"                      
+            echo "Checking ${url}..."
+            
+            # 使用 curl 检查网址是否有效
+            if curl --head --silent --fail "$url" > /dev/null; then
+              echo "Found valid URL: $url"
+              imagebuilder_url=$url
+               break
+            else
+               echo "URL not valid: $url"
+            fi
+          done
+            
+          echo "imagebuilder_url=$imagebuilder_url" >> $GITHUB_ENV
+        
+      - name: 查看机器配置  
+        run: |  
+          echo "警告⚠"  
+          echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"  
+          echo -e "CPU性能排序: 7763 > 8370C > 8272CL > 8171M > E5-2673\n"  
+          echo "--------------------------CPU信息--------------------------"  
+          echo "CPU物理数量: $(cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l)"  
+          echo "CPU核心数量: $(nproc)"  
+          echo -e "CPU型号信息:$(cat /proc/cpuinfo | grep -m1 name | awk -F: '{print $2}')\n"  
+          echo "--------------------------内存信息--------------------------"  
+          echo "已安装内存详细信息:"  
+          echo -e "$(sudo lshw -short -C memory | grep GiB)\n"  
+          echo "--------------------------硬盘信息--------------------------"  
+          echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT  
+
+      - name: "Optimize Disk Space"
+        if: false  # 跳过该步骤
+        uses: "hugoalh/disk-space-optimizer-ghaction@v0.8.0"
+        with:
+          operate_sudo: "True"
+          general_include: ".+"
+          docker_include: ".+"
+          docker_prune: "True"
+          docker_clean: "True"
+          apt_prune: "True"
+          apt_clean: "True"
+          homebrew_prune: "True"
+          homebrew_clean: "True"
+          npm_prune: "True"
+          npm_clean: "True"
+          os_swap: "True" 
+      
+      - name: Show disk space
+        run: |
+          echo "Show disk space"
+          echo "=============================================================================="
+          df -hT
+          echo "=============================================================================="
+      
+      - name: Install prerequisites
+        run: |
+          sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev \
+          zlib1g-dev gawk genisoimage git gettext libssl-dev xsltproc rsync wget \
+          unzip python3 python3-distutils
+
+      - name: Build with imagebuilder
+        run: |
+          wget ${{ env.imagebuilder_url }}
+          tar -I zstd -x -f ${{ matrix.version }}-imagebuilder-*.tar.zst
+          cd ${{ matrix.version }}-imagebuilder-*/
+          make image PROFILE="generic"
