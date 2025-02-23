@@ -156,10 +156,18 @@ jobs:
           cd ${{ matrix.version }}-imagebuilder-*/
           make image PROFILE="generic"
 
+      - name: Move Files
+        run: |
+          # 将 files、diffconfig、diy. sh复制到 Docker 容器中的 /home/user/openwrt 即 /work/openwrt 下
+          cp -r ./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/* ./${{ matrix.version }}-imagebuilder-*/
+          cp -r ./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/* ./${{ matrix.version }}-imagebuilder-*/
+          
+
       - name: Download External IPK
         working-directory: ${{ matrix.version }}-imagebuilder-$(echo $branch | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
         run: |
-           ./
+           ./diy_ipk_from_release
+           ./diy_ipk_from_repositories
 
       - name: Run Patch and DIY Scripts
         working-directory: ${{ matrix.version }}-imagebuilder-$(echo $branch | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
