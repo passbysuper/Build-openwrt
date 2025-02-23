@@ -165,23 +165,23 @@ jobs:
           
 
       - name: Download External IPK
-        working-directory: ${{ matrix.version }}-imagebuilder-$(echo $branch | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
+        working-directory: ${{ matrix.version }}-imagebuilder-$(echo ${{ env.branch }} | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
         run: |
            ./diy_ipk_from_release
            ./diy_ipk_from_repositories
 
       - name: Run Patch and DIY Scripts
-        working-directory: ${{ matrix.version }}-imagebuilder-$(echo $branch | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
+        working-directory: ${{ matrix.version }}-imagebuilder-$(echo ${{ env.branch }} | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
         run: |
           ./Patch
    
       - name: Generate Firmware
-        working-directory: ${{ env.VENDOR }}-imagebuilder-${{ env.VERSION }}-x86-64.Linux-x86_64
+        working-directory: ${{ matrix.version }}-imagebuilder-$(echo ${{ env.branch }} | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
         run: |
           ./build
 
       - name: MV Firmware
-        working-directory: ${{ env.VENDOR }}-imagebuilder-${{ env.VERSION }}-x86-64.Linux-x86_64
+        working-directory: ${{ matrix.version }}-imagebuilder-$(echo ${{ env.branch }} | sed 's/^openwrt-//').${{ env.N }}-x86-64.Linux-x86_64
         run: |
           mkdir -p ./targets
           find /bin/targets/ -type f -exec mv {} ./targets/ \;
