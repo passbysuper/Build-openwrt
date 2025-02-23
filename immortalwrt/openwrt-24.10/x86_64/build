@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# 打印 info
+make info
+
+内核分区大小
+KERNEL_PARTSIZE="64"
+
+文件分区大小
+ROOTFS_PARTSIZE="400"
+
+# 主配置名称
+PROFILE="generic"
+
+PACKAGES=""
+
+# Argon 主题
+PACKAGES="$PACKAGES luci-theme-argon luci-i18n-argon-config-zh-cn"
+
+# System
+PACKAGES="$PACKAGES luci-base luci-i18n-base-zh-cn luci-i18n-advanced-reboot-zh-cn luci-i18n-autoreboot-zh-cn luci-i18n-attendedsysupgrade-zh-cn luci-i18n-ttyd-zh-cn luci-i18n-filebrowser-zh-cn luci-i18n-filemanager-zh-cn"
+
+# Proxy
+PACKAGES="$PACKAGES luci-app-openclash luci-i18n-homeproxy-zh-cn"
+
+# Network
+PACKAGES="$PACKAGES luci-i18n-ddns-zh-cn rsync openssh-sftp-server tailscale etherwake luci-i18n-zerotier-zh-cn"
+
+# Utilities
+PACKAGES="$PACKAGES unzip sshpass luci-i18n-upnp-zh-cn  luci-i18n-lucky-zh-cn"
+
+# 一些自定义文件
+FILES="files"
+
+# 禁用服务
+DISABLED_SERVICES=""
+
+# Force opkg to overwrite files
+sed -i "s/install \$(BUILD_PACKAGES)/install \$(BUILD_PACKAGES) --force-overwrite/" Makefile
+
+make image PROFILE="$PROFILE" PACKAGES="$PACKAGES" FILES="$FILES" DISABLED_SERVICES="$DISABLED_SERVICES" KERNEL_PARTSIZE="$KERNEL_PARTSIZE" ROOTFS_PARTSIZE="$ROOTFS_PARTSIZE"
