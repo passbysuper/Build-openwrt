@@ -3,6 +3,12 @@
 # 打印 info
 make info
 
+内核分区大小
+KERNEL_PARTSIZE="64"
+
+文件分区大小
+ROOTFS_PARTSIZE="400"
+
 # 主配置名称
 PROFILE="generic"
 
@@ -22,7 +28,7 @@ PACKAGES="$PACKAGES luci-base luci-i18n-base-zh-cn luci-i18n-advanced-reboot-zh-
 PACKAGES="$PACKAGES luci-app-openclash luci-i18n-homeproxy-zh-cn"
 
 # Network
-PACKAGES="$PACKAGES luci-i18n-ddns-zh-cn rsync openssh-sftp-server tailscale etherwake -zerotier luci-i18n-zerotier-zh-cn"
+PACKAGES="$PACKAGES luci-i18n-ddns-zh-cn rsync openssh-sftp-server tailscale etherwake luci-i18n-zerotier-zh-cn"
 
 # Utilities
 PACKAGES="$PACKAGES unzip sshpass luci-i18n-upnp-zh-cn  luci-i18n-lucky-zh-cn"
@@ -33,4 +39,7 @@ FILES="files"
 # 禁用服务
 DISABLED_SERVICES=""
 
-make image PROFILE="$PROFILE" PACKAGES="$PACKAGES" FILES="$FILES" DISABLED_SERVICES="$DISABLED_SERVICES"
+# Force opkg to overwrite files
+sed -i "s/install \$(BUILD_PACKAGES)/install \$(BUILD_PACKAGES) --force-overwrite/" Makefile
+
+make image PROFILE="$PROFILE" PACKAGES="$PACKAGES" FILES="$FILES" DISABLED_SERVICES="$DISABLED_SERVICES" KERNEL_PARTSIZE="$KERNEL_PARTSIZE" ROOTFS_PARTSIZE="$ROOTFS_PARTSIZE"
