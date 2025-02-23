@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# 主函数
+main() {
+    # 创建 package 文件夹
+    mkdir -p package
+
+    # 下载 luci-app-lucky 相关文件
+    download_files "https://api.github.com/repos/gdy666/luci-app-lucky/releases/latest" \
+                   "luci-app-lucky|luci-i18n-lucky-zh-cn|lucky.*x86_64.ipk"
+
+    # 下载 small 相关文件
+    download_files "https://api.github.com/repos/kenzok8/small/releases/latest" \
+                   "geoview|clash|pass"
+}
+
+# 下载文件的函数
+download_files() {
+    local release_url=$1
+    local keywords=$2
+
+    # 获取最新 release 的信息
+    assets=$(curl -s $release_url | jq -r ".assets[] | select(.name | test(\"$keywords\")) | .browser_download_url")
+
+    # 如果没有找到匹配的文件，则退出
+    if [[ -z "$assets" ]]; then
+        echo "No matching files found."
+        return
+    fi
+
+    # 下载每个符合条件的文件到 package 目录
+    for url in $assets; do
+        echo "Downloading $url..."
+        wget -q -P package "$url"
+    done
+
+    echo "Download completed."
+}
+
+# 调用主函数
+main
