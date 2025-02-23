@@ -3,7 +3,7 @@
 # 主函数
 main() {
     # 创建 package 文件夹
-    mkdir -p package
+    mkdir -p packages
 
     # 下载 luci-app-lucky 相关文件
     download_files "https://api.github.com/repos/gdy666/luci-app-lucky/releases/latest" \
@@ -31,7 +31,7 @@ download_files() {
     # 下载每个符合条件的文件到 package 目录
     for url in $assets; do
         echo "Downloading $url..."
-        wget -q -P package "$url"
+        wget -q -P packages "$url"
     done
 
     echo "Download completed."
