@@ -1,5 +1,5 @@
 # 创建目标目录
-mkdir -p package
+mkdir -p packages
 
 # 新的包 URL 配置
 repo_url="https://downloads.immortalwrt.org/releases/24.10.0/packages/x86_64/luci/"
@@ -25,7 +25,7 @@ download_and_copy() {
     
     # 将临时目录下的 'luci' 子目录中的所有文件移动到 package 目录
     if [ -d "$temp_dir/luci" ]; then
-        mv "$temp_dir/luci"/* package/
+        mv "$temp_dir/luci"/* packages/
     fi
     
     # 删除临时目录
