@@ -179,10 +179,9 @@ jobs:
           bash ./build
 
       - name: MV Firmware
-        working-directory: imagebuilder
         run: |
           mkdir -p ./targets
-          find /bin/targets/ -type f -exec mv {} ./targets/ \;
+          find ./imagebuilder/bin/targets/ -type f -exec mv {} ./targets/ \;
 
 
       - name: Create Git tag
