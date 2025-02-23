@@ -1,0 +1,38 @@
+# 创建目标目录
+mkdir -p packages
+
+# 新的包 URL 配置
+repo_url="https://downloads.immortalwrt.org/releases/24.10.0/packages/x86_64/luci/"
+
+# 包名称过滤关键字
+keywords=("luci-app-openclash" "homeproxy" "argon" "zerotier" "autoreboot")
+
+# 下载并复制文件的函数
+download_and_copy() {
+    # 参数1: 仓库地址, 参数2: 关键字数组
+    repo_url=$1
+    keywords=("${@:2}")  # 从参数2开始取所有的关键字
+    
+    # 创建临时目录
+    temp_dir=$(mktemp -d)
+    
+    # 遍历关键字进行匹配和下载
+    for keyword in "${keywords[@]}"; do
+        echo "下载匹配 '$keyword' 的包..."
+        # 使用 wget 下载符合条件的文件，直接保存到临时目录
+        wget -r -np -nH --cut-dirs=4 -R "index.html*" -P "$temp_dir" "$repo_url" -A "*$keyword*"
+    done
+    
+    # 将临时目录下的 'luci' 子目录中的所有文件移动到 package 目录
+    if [ -d "$temp_dir/luci" ]; then
+        mv "$temp_dir/luci"/* packages/
+    fi
+    
+    # 删除临时目录
+    rm -rf "$temp_dir"
+}
+
+# 调用函数下载并复制匹配的文件
+#download_and_copy "$repo_url" "${keywords[@]}"
+
+#echo "下载完成，所有匹配的文件已保存到 'package' 目录下。"
