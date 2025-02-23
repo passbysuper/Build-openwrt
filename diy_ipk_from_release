@@ -10,8 +10,8 @@ main() {
                    "luci-app-lucky|luci-i18n-lucky-zh-cn|lucky.*x86_64.ipk"
 
     # 下载 small 相关文件
-    # download_files "https://api.github.com/repos/kenzok8/small/releases/latest" \
-                   "geoview|clash|pass"
+#    download_files "https://api.github.com/repos/kenzok8/small/releases/latest" \
+#                   "geoview|clash|pass"
 }
 
 # 下载文件的函数
