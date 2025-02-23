@@ -22,7 +22,7 @@ PACKAGES="$PACKAGES luci-base luci-i18n-base-zh-cn luci-i18n-advanced-reboot-zh-
 PACKAGES="$PACKAGES luci-app-openclash luci-i18n-homeproxy-zh-cn"
 
 # Network
-PACKAGES="$PACKAGES luci-i18n-ddns-zh-cn rsync openssh-sftp-server tailscale etherwake luci-i18n-zerotier-zh-cn"
+PACKAGES="$PACKAGES luci-i18n-ddns-zh-cn rsync openssh-sftp-server tailscale etherwake -zerotier luci-i18n-zerotier-zh-cn"
 
 # Utilities
 PACKAGES="$PACKAGES unzip sshpass luci-i18n-upnp-zh-cn  luci-i18n-lucky-zh-cn"
