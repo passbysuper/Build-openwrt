@@ -148,3 +148,7 @@ jobs:
           tar -I zstd -x -f ${{ matrix.version }}-imagebuilder-*.tar.zst
           cd ${{ matrix.version }}-imagebuilder-*/
           make image PROFILE="generic"
+
+      - name: SSH（INPUT"q" ➡️ RUN："./mv" ➡️ “exit”）
+        #if: ${{ github.event.inputs.run_ssh == 'true' }}  # 只有 run_ssh 为 true 时执行
+        uses: mxschmitt/action-tmate@v3
