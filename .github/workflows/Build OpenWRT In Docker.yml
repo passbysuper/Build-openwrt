@@ -166,18 +166,18 @@ jobs:
           echo "Running docker with image tag: ${{ env.IMAGE_TAG_openwrt }}"
           docker run --rm -i \
                 --user root \
-                -v "./imagebuilder/bin:/build/bin" \
-                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/files:/build/files" \
-                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/build:/build/build" \
-                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_release:/build/diy_ipk_from_release" \
-                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories:/build/diy_ipk_from_repositories" \
-                -v "./Patch:/build/Patch" \
+                -v "./imagebuilder/bin:/builder/bin" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/files:/builder/files" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/build:/builder/build" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_release:/builder/diy_ipk_from_release" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories:/builder/diy_ipk_from_repositories" \
+                -v "./Patch:/builder/Patch" \
                 ${{ env.IMAGE_TAG_openwrt }} /bin/bash -c "
                   apt-get update && apt-get install -y jq &&
-                  /build/diy_ipk_from_release &&
-                  /build/diy_ipk_from_repositories &&
-                  /build/Patch &&
-                  /build/build
+                  /builder/diy_ipk_from_release &&
+                  /builder/diy_ipk_from_repositories &&
+                  /builder/Patch &&
+                  /builder/build
                 "
 
       - name: SSH（INPUT"q" ➡️ RUN："./mv" ➡️ “exit”）
