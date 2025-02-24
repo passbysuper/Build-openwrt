@@ -214,7 +214,9 @@ jobs:
         with:
           tag_name: ${{ env.TAG_NAME_FM }}
           name: ${{ env.RELEASE_NAME_FM }}
-          files: ./targets/*  # 递归匹配所有文件
+          files: |
+            ./targets/*generic-squashfs-combined-efi.img.gz
+            #./targets/*config.buildinfo
           body: "固件发布"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
