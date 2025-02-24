@@ -24,8 +24,8 @@ jobs:
 
     strategy:
       matrix:
-        #version: [immortalwrt, openwrt]
-        version: [immortalwrt]
+        version: [immortalwrt, openwrt]
+        #version: [immortalwrt]
         #version: [openwrt]
         
         #branch: [openwrt-24.10, openwrt-23.10]  # 默认分支
@@ -141,6 +141,7 @@ jobs:
           chmod +x ./Patch
       
       - name: Build ImmortalWrt
+        if: ${{ matrix.version == 'immortalwrt' }} 
         run: |
           echo "Running docker with image tag: ${{ env.IMAGE_TAG_immortalwrt }}"
           docker run --rm -i \
@@ -157,7 +158,25 @@ jobs:
                       /home/build/immortalwrt/Patch &&
                       /home/build/immortalwrt/build
                 "
-
+ 
+      - name: Build ImmortalWrt
+        if: ${{ matrix.version == 'openwrt' }} 
+        run: |
+          echo "Running docker with image tag: ${{ env.IMAGE_TAG_immortalwrt }}"
+          docker run --rm -i \
+                --user root \
+                -v "./imagebuilder/bin:/home/build/immortalwrt/bin" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/files:/build/files" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/build:/build/build" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_release:/build/diy_ipk_from_release" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories:/build/diy_ipk_from_repositories" \
+                -v "./Patch:/home/build/immortalwrt/Patch" \
+                ${{ env.IMAGE_TAG_immortalwrt }} /bin/bash -c "
+                      /build/diy_ipk_from_release &&
+                      /build/diy_ipk_from_repositories &&
+                      /build/Patch &&
+                      /build/build
+                "
           
       - name: MV Firmware
         run: |
