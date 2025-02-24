@@ -162,7 +162,7 @@ jobs:
       - name: Build ImmortalWrt
         if: ${{ matrix.version == 'openwrt' }} 
         run: |
-          echo "Running docker with image tag: ${{ env.IMAGE_TAG_immortalwrt }}"
+          echo "Running docker with image tag: ${{ env.IMAGE_TAG_openwrt }}"
           docker run --rm -i \
                 --user root \
                 -v "./imagebuilder/bin:/home/build/immortalwrt/bin" \
@@ -171,7 +171,7 @@ jobs:
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_release:/build/diy_ipk_from_release" \
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories:/build/diy_ipk_from_repositories" \
                 -v "./Patch:/home/build/immortalwrt/Patch" \
-                ${{ env.IMAGE_TAG_immortalwrt }} /bin/bash -c "
+                ${{ env.IMAGE_TAG_openwrt }} /bin/bash -c "
                       /build/diy_ipk_from_release &&
                       /build/diy_ipk_from_repositories &&
                       /build/Patch &&
