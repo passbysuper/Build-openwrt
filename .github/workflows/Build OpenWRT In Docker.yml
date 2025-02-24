@@ -171,7 +171,7 @@ jobs:
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/build:/build/build" \
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_release:/build/diy_ipk_from_release" \
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories:/build/diy_ipk_from_repositories" \
-                -v "./Patch:/home/build/immortalwrt/Patch" \
+                -v "./Patch:/build/Patch" \
                 ${{ env.IMAGE_TAG_openwrt }} /bin/bash -c "
                   apt-get update && apt-get install -y jq &&
                   /build/diy_ipk_from_release &&
