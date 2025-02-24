@@ -132,6 +132,13 @@ jobs:
           echo "=============================================================================="
           df -hT
           echo "=============================================================================="
+
+      - name: Set executable permissions
+        run: |
+          chmod +x ./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/build 
+          chmod +x ./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_release
+          chmod +x ./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories
+          chmod +x ./Patch
       
       - name: Build ImmortalWrt
         run: |
@@ -140,6 +147,7 @@ jobs:
                 --user root \
                 -v "./imagebuilder/bin:/home/build/immortalwrt/bin" \
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/files:/home/build/immortalwrt/files" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/build:/home/build/immortalwrt/build" \
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_release:/home/build/immortalwrt/diy_ipk_from_release" \
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories:/home/build/immortalwrt/diy_ipk_from_repositories" \
                 -v "./Patch:/home/build/immortalwrt/Patch" \
@@ -147,7 +155,7 @@ jobs:
                       /home/build/immortalwrt/diy_ipk_from_release &&
                       /home/build/immortalwrt/diy_ipk_from_repositories &&
                       /home/build/immortalwrt/Patch &&
-                      /home/build/immortalwrt/build.sh
+                      /home/build/immortalwrt/build
                 "
 
           
