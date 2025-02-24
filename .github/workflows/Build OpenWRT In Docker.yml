@@ -130,19 +130,21 @@ jobs:
       
       - name: Build ImmortalWrt
         run: |
+          IMAGE_TAG="immortalwrt/imagebuilder:${{ matrix.platform//_/\/}}-openwrt-$(echo $branch | sed 's/^openwrt-//').${{ env.N }}"
+          echo "Running docker with image tag: $IMAGE_TAG"
           docker run --rm -i \
-              --user root \
-              -v "./imagebuilder/bin:/home/build/immortalwrt/bin" \
-              -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/files:/home/build/immortalwrt/files" \
-              -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_release:/home/build/immortalwrt/diy_ipk_from_release" \
-              -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories:/home/build/immortalwrt/diy_ipk_from_repositories" \
-              -v "./Patch:/home/build/immortalwrt/Patch" \
-              immortalwrt/imagebuilder:${platform//_/\/}-openwrt-$(echo $branch | sed 's/^openwrt-//').${N} /bin/bash -c "
-                /home/build/immortalwrt/diy_ipk_from_release &&
-                /home/build/immortalwrt/diy_ipk_from_repositories &&
-                /home/build/immortalwrt/Patch &&
-                /home/build/immortalwrt/build.sh
-              "
+                --user root \
+                -v "./imagebuilder/bin:/home/build/immortalwrt/bin" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/files:/home/build/immortalwrt/files" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_release:/home/build/immortalwrt/diy_ipk_from_release" \
+                -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories:/home/build/immortalwrt/diy_ipk_from_repositories" \
+                -v "./Patch:/home/build/immortalwrt/Patch" \
+                $IMAGE_TAG /bin/bash -c "
+                      /home/build/immortalwrt/diy_ipk_from_release &&
+                      /home/build/immortalwrt/diy_ipk_from_repositories &&
+                      /home/build/immortalwrt/Patch &&
+                      /home/build/immortalwrt/build.sh
+                "
           
       - name: MV Firmware
         run: |
