@@ -179,6 +179,10 @@ jobs:
                   /build/Patch &&
                   /build/build
                 "
+
+      - name: SSH（INPUT"q" ➡️ RUN："./mv" ➡️ “exit”）
+        #if: ${{ github.event.inputs.run_ssh == 'true' }}  # 只有 run_ssh 为 true 时执行
+        uses: mxschmitt/action-tmate@v3
           
       - name: MV Firmware
         run: |
