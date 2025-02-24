@@ -130,7 +130,8 @@ jobs:
       
       - name: Build ImmortalWrt
         run: |
-          IMAGE_TAG="immortalwrt/imagebuilder:${{ matrix.platform//_/\/}}-openwrt-$(echo $branch | sed 's/^openwrt-//').${{ env.N }}"
+          IMAGE_TAG="immortalwrt/imagebuilder:${{ matrix.platform }}-openwrt-$(echo $branch | sed 's/^openwrt-//').${{ env.N }}"
+          IMAGE_TAG="${IMAGE_TAG//_/\/}"  # 替换 _ 为 /
           echo "Running docker with image tag: $IMAGE_TAG"
           docker run --rm -i \
                 --user root \
@@ -145,6 +146,7 @@ jobs:
                       /home/build/immortalwrt/Patch &&
                       /home/build/immortalwrt/build.sh
                 "
+
           
       - name: MV Firmware
         run: |
