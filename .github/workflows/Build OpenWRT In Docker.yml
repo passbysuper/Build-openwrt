@@ -160,7 +160,7 @@ jobs:
                   /home/build/immortalwrt/build
                 "
  
-      - name: Build ImmortalWrt
+      - name: Build Openwrt
         if: ${{ matrix.version == 'openwrt' }} 
         run: |
           echo "Running docker with image tag: ${{ env.IMAGE_TAG_openwrt }}"
@@ -173,10 +173,11 @@ jobs:
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories:/build/diy_ipk_from_repositories" \
                 -v "./Patch:/home/build/immortalwrt/Patch" \
                 ${{ env.IMAGE_TAG_openwrt }} /bin/bash -c "
-                      /build/diy_ipk_from_release &&
-                      /build/diy_ipk_from_repositories &&
-                      /build/Patch &&
-                      /build/build
+                  apt-get update && apt-get install -y jq &&
+                  /build/diy_ipk_from_release &&
+                  /build/diy_ipk_from_repositories &&
+                  /build/Patch &&
+                  /build/build
                 "
           
       - name: MV Firmware
