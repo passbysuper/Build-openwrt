@@ -153,10 +153,11 @@ jobs:
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_repositories:/home/build/immortalwrt/diy_ipk_from_repositories" \
                 -v "./Patch:/home/build/immortalwrt/Patch" \
                 ${{ env.IMAGE_TAG_immortalwrt }} /bin/bash -c "
-                      /home/build/immortalwrt/diy_ipk_from_release &&
-                      /home/build/immortalwrt/diy_ipk_from_repositories &&
-                      /home/build/immortalwrt/Patch &&
-                      /home/build/immortalwrt/build
+                  apt-get update && apt-get install -y jq &&
+                  /home/build/immortalwrt/diy_ipk_from_release &&
+                  /home/build/immortalwrt/diy_ipk_from_repositories &&
+                  /home/build/immortalwrt/Patch &&
+                  /home/build/immortalwrt/build
                 "
  
       - name: Build ImmortalWrt
