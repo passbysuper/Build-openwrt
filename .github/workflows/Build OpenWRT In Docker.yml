@@ -187,7 +187,7 @@ jobs:
       - name: MV Firmware
         run: |
           mkdir -p ./targets
-          find ./imagebuilder/bin/targets/ -type f -exec mv {} ./targets/ \;
+          sudo find ./imagebuilder/bin/targets/ -type f -exec mv {} ./targets/ \;
 
 
       - name: Create Git tag
