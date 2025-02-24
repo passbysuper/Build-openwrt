@@ -166,7 +166,7 @@ jobs:
           echo "Running docker with image tag: ${{ env.IMAGE_TAG_openwrt }}"
           docker run --rm -i \
                 --user root \
-                -v "./imagebuilder/bin:/home/build/immortalwrt/bin" \
+                -v "./imagebuilder/bin:/build/bin" \
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/files:/build/files" \
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/build:/build/build" \
                 -v "./${{ matrix.version }}/${{ env.branch }}/${{ matrix.platform }}/diy_ipk_from_release:/build/diy_ipk_from_release" \
