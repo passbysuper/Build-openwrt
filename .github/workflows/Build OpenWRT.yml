@@ -15,8 +15,8 @@ on:
           - 'true'
 
   # 定时触发 (例如每天凌晨 1 点触发)
-  schedule:
-    - cron: '0 1 * * *'  # 每天凌晨 1 点 UTC，按需求调整时间
+#  schedule:
+#    - cron: '0 1 * * *'  # 每天凌晨 1 点 UTC，按需求调整时间
 
 jobs:
   Building:
