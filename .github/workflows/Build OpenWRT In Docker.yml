@@ -250,7 +250,7 @@ jobs:
           #设置是否删除 workflows 运行记录（选项：true/false），默认为 false。
           delete_workflows: true
           #设置保留几天以内的 workflows 记录（整数。如：30），设置为 0 表示全部删除。默认为 90 天。
-          workflows_keep_day: 7
+          workflows_keep_day: 6
           #设置需要保留的 workflows 运行记录的名称关键字，多个关键字使用 / 分割（例如：book/tool），默认值 无。
           #workflows_keep_keyword:
           #设置是否输出详细的 json 日志（选项：true/false），默认值 false。
